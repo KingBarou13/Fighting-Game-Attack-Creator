@@ -1,5 +1,4 @@
 class Attack:
-
     def __init__(
         self,
         attackStrength,
@@ -19,65 +18,68 @@ class Attack:
     ):
         self.attackStrength = attackStrength
         self.attackInput = attackInput
-        self.damage = damage
+        self.damage = damage if isinstance(damage, list) else [damage]
         self.attackHeight = attackHeight
-        self.startupFrames = startupFrames
-        self.activeFrames = activeFrames
+        self.startupFrames = startupFrames if isinstance(startupFrames, list) else [startupFrames]
+        self.activeFrames = activeFrames if isinstance(activeFrames, list) else [activeFrames]
         self.recoveryFrames = recoveryFrames
         self.invulFrames = invulFrames
-        self.hitstun = hitstun
-        self.blockstun = blockstun
+        self.hitstun = hitstun if isinstance(hitstun, list) else [hitstun]
+        self.blockstun = blockstun if isinstance(blockstun, list) else [blockstun]
         self.meterGain = meterGain
         self.counterProperties = counterProperties if counterProperties else []
         self.range = range
         self.cancelOptions = cancelOptions if cancelOptions else []
 
     def calculateFrameAdvantage(self):
-        frameAdvantage = self.blockstun - self.recoveryFrames
-        print(f"\nFrame Advantage Calculation:")
-        print(f"Frame Advantage = {frameAdvantage}")
-        if frameAdvantage > 0:
-            print("Result: This move is plus on block. You get to act first.")
-        elif frameAdvantage < 0:
-            print(
-                "Result: This move is minus on block. Your opponent gets to act first."
-            )
-        else:
-            print(
-                "Result: This move is neutral on block. You and your opponent can act at the same time."
-            )
+        for i, blockstun in enumerate(self.blockstun):
+            frameAdvantage = blockstun - self.recoveryFrames
+            print(f"\nFrame Advantage Calculation for Hit {i+1}:")
+            print(f"Frame Advantage = {frameAdvantage}")
+            if frameAdvantage > 0:
+                print("Result: This move is plus on block. You get to act first.")
+            elif frameAdvantage < 0:
+                print(
+                    "Result: This move is minus on block. Your opponent gets to act first."
+                )
+            else:
+                print(
+                    "Result: This move is neutral on block. You and your opponent can act at the same time."
+                )
 
     def calculateHitAdvantage(self):
-        hitAdvantage = self.hitstun - self.recoveryFrames
-        print(f"\nHit Advantage Calculation:")
-        print(f"Hit Advantage = {hitAdvantage}")
-        if hitAdvantage > 0:
-            print("Result: This move is plus on hit. You get to act first.")
-        elif hitAdvantage < 0:
-            print(
-                "Result: This move is minus on hit. Your opponent gets to act first."
-            )
-        else:
-            print(
-                "Result: This move is neutral on hit. You and your opponent can act at the same time."
-            )
+        for i, hitstun in enumerate(self.hitstun):
+            hitAdvantage = hitstun - self.recoveryFrames
+            print(f"\nHit Advantage Calculation for Hit {i+1}:")
+            print(f"Hit Advantage = {hitAdvantage}")
+            if hitAdvantage > 0:
+                print("Result: This move is plus on hit. You get to act first.")
+            elif hitAdvantage < 0:
+                print(
+                    "Result: This move is minus on hit. Your opponent gets to act first."
+                )
+            else:
+                print(
+                    "Result: This move is neutral on hit. You and your opponent can act at the same time."
+                )
 
     def __str__(self):
-        return (f"\nAttack Details:\n"
-                f"-----------------\n"
-                f"Attack Input   : {self.attackInput}\n"
-                f"Strength       : {self.attackStrength}\n"
-                f"Damage         : {self.damage}\n"
-                f"Height         : {self.attackHeight}\n"
-                f"Startup Frames : {self.startupFrames}\n"
-                f"Active Frames  : {self.activeFrames}\n"
-                f"Recovery Frames: {self.recoveryFrames}\n"
-                f"Invul Frames   : {self.invulFrames}\n"
-                f"Hitstun        : {self.hitstun}\n"
-                f"Blockstun      : {self.blockstun}\n"
-                f"Meter Gain     : {self.meterGain}\n"
-                f"Range          : {self.range}\n"
-                f"Cancel Options : {', '.join(self.cancelOptions)}\n")
+        attack_details = (f"\nAttack Details:\n"
+                          f"-----------------\n"
+                          f"Attack Input   : {self.attackInput}\n"
+                          f"Strength       : {self.attackStrength}\n"
+                          f"Damage         : {self.damage}\n"
+                          f"Height         : {self.attackHeight}\n"
+                          f"Startup Frames : {self.startupFrames}\n"
+                          f"Active Frames  : {self.activeFrames}\n"
+                          f"Recovery Frames: {self.recoveryFrames}\n"
+                          f"Invul Frames   : {self.invulFrames}\n"
+                          f"Hitstun        : {self.hitstun}\n"
+                          f"Blockstun      : {self.blockstun}\n"
+                          f"Meter Gain     : {self.meterGain}\n"
+                          f"Range          : {self.range}\n"
+                          f"Cancel Options : {', '.join(self.cancelOptions)}\n")
+        return attack_details
 
 
 print(f"\nControl Scheme (Using PS5 and Numpad Notation)\n"
@@ -92,23 +94,44 @@ print(f"\nControl Scheme (Using PS5 and Numpad Notation)\n"
       f"H (Heavy Attack)         : Cross\n"
       f"S (Special Attack)       : Circle\n")
 
-#Example Usage
-slayer5K = Attack(
-    "Medium",
-    "5M",
-    44,
-    "Mid",
-    7,
-    3,
-    14,
+# Single-Hitting Attack
+singleHitMove = Attack(
+    "Light",
+    "5L",
+    20,
+    "Low",
+    5,
+    2,
+    10,
     0,
-    17,
-    9,
-    meterGain=5,
-    range=3,
-    cancelOptions=["Special"],
+    15,
+    7,
+    meterGain=3,
+    range=2,
+    cancelOptions=["Special"]
 )
 
-print(slayer5K)
-slayer5K.calculateFrameAdvantage()
-slayer5K.calculateHitAdvantage()
+print(singleHitMove)
+singleHitMove.calculateFrameAdvantage()
+singleHitMove.calculateHitAdvantage()
+
+# Multi-Hitting Attack
+multiHitMove = Attack(
+    "Heavy",
+    "5H",
+    [30, 40, 50],
+    "Mid",
+    [10, 20, 30],
+    [5, 5, 5],
+    18,
+    0,
+    [25, 30, 35],
+    [15, 20, 25],
+    meterGain=10,
+    range=5,
+    cancelOptions=["Special", "Super"]
+)
+
+print(multiHitMove)
+multiHitMove.calculateFrameAdvantage()
+multiHitMove.calculateHitAdvantage()
