@@ -15,6 +15,8 @@ class Attack:
         counterProperties=None,
         range=0,
         cancelOptions=None,
+        verticalKnockback=0,
+        horizontalKnockback=0
     ):
         self.attackStrength = attackStrength
         self.attackInput = attackInput
@@ -30,6 +32,8 @@ class Attack:
         self.counterProperties = counterProperties if counterProperties else []
         self.range = range
         self.cancelOptions = cancelOptions if cancelOptions else []
+        self.verticalKnockback = verticalKnockback if isinstance(verticalKnockback, list) else [verticalKnockback]
+        self.horizontalKnockback = horizontalKnockback if isinstance(horizontalKnockback, list) else [horizontalKnockback]
 
     def calculateFrameAdvantage(self):
         for i, blockstun in enumerate(self.blockstun):
@@ -66,19 +70,21 @@ class Attack:
     def __str__(self):
         attack_details = (f"\nAttack Details:\n"
                           f"-----------------\n"
-                          f"Attack Input   : {self.attackInput}\n"
-                          f"Strength       : {self.attackStrength}\n"
-                          f"Damage         : {self.damage}\n"
-                          f"Height         : {self.attackHeight}\n"
-                          f"Startup Frames : {self.startupFrames}\n"
-                          f"Active Frames  : {self.activeFrames}\n"
-                          f"Recovery Frames: {self.recoveryFrames}\n"
-                          f"Invul Frames   : {self.invulFrames}\n"
-                          f"Hitstun        : {self.hitstun}\n"
-                          f"Blockstun      : {self.blockstun}\n"
-                          f"Meter Gain     : {self.meterGain}\n"
-                          f"Range          : {self.range}\n"
-                          f"Cancel Options : {', '.join(self.cancelOptions)}\n")
+                          f"Attack Input       : {self.attackInput}\n"
+                          f"Strength           : {self.attackStrength}\n"
+                          f"Damage             : {self.damage}\n"
+                          f"Height             : {self.attackHeight}\n"
+                          f"Startup Frames     : {self.startupFrames}\n"
+                          f"Active Frames      : {self.activeFrames}\n"
+                          f"Recovery Frames    : {self.recoveryFrames}\n"
+                          f"Invul Frames       : {self.invulFrames}\n"
+                          f"Hitstun            : {self.hitstun}\n"
+                          f"Blockstun          : {self.blockstun}\n"
+                          f"Meter Gain         : {self.meterGain}\n"
+                          f"Range              : {self.range}\n"
+                          f"Cancel Options     : {', '.join(self.cancelOptions)}\n"
+                          f"Vertical Knockback : {self.verticalKnockback}\n"
+                          f"Horizontal Knockback: {self.horizontalKnockback}\n")
         return attack_details
 
 
@@ -108,7 +114,9 @@ singleHitMove = Attack(
     7,
     meterGain=3,
     range=2,
-    cancelOptions=["Special"]
+    cancelOptions=["Special"],
+    verticalKnockback=3,
+    horizontalKnockback=4
 )
 
 print(singleHitMove)
@@ -129,7 +137,9 @@ multiHitMove = Attack(
     [15, 20, 25],
     meterGain=10,
     range=5,
-    cancelOptions=["Special", "Super"]
+    cancelOptions=["Special", "Super"],
+    verticalKnockback=[6, 7, 8],
+    horizontalKnockback=[9, 10, 11]
 )
 
 print(multiHitMove)
