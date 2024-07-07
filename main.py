@@ -110,6 +110,7 @@ class Attack:
             charge_details = "\nCharge Levels:\n---------------"
             for level, properties in self.chargeLevels.items():
                 charge_details += (f"\nCharge Level {level}:\n"
+                                   f"  Charge Time        : {properties['chargeTime']} frames\n"
                                    f"  Damage             : {properties['damage']}\n"
                                    f"  Startup Frames     : {properties['startupFrames']}\n"
                                    f"  Active Frames      : {properties['activeFrames']}\n"
@@ -122,113 +123,85 @@ class Attack:
 
         return attack_details
 
-print(f"\nControl Scheme (Using PS5 and Numpad Notation)\n"
-      f"-----------------------------------------------\n"
-      f"5                        : Neutral\n"
-      f"6                        : Forward\n"
-      f"4                        : Back\n"
-      f"8                        : Up\n"
-      f"2                        : Down\n"
-      f"L (Light Attack)         : Square\n"
-      f"M (Medium Attack)        : Triangle\n"
-      f"H (Heavy Attack)         : Cross\n"
-      f"S (Special Attack)       : Circle\n")
+def get_input_list(prompt, allow_multiple=False):
+    user_input = input(prompt)
+    if allow_multiple:
+        return [int(x.strip()) for x in user_input.split(",")]
+    return int(user_input.strip())
 
-# Single-Hitting Attack
-singleHitMove = Attack(
-    "Light",
-    "5L",
-    20,
-    "Low",
-    5,
-    2,
-    10,
-    0,
-    15,
-    7,
-    meterGain=3,
-    range=2,
-    cancelOptions=["Special"],
-    verticalKnockback=3,
-    horizontalKnockback=4
-)
+def create_attack():
+    print("Define your attack:\n")
 
-print(singleHitMove)
-singleHitMove.calculateFrameAdvantage()
-singleHitMove.calculateHitAdvantage()
+    attackStrength = input("Enter attack strength (e.g., Light, Medium, Heavy): ")
+    attackInput = input("Enter attack input (e.g., 5L, 2M): ")
+    damage_input = get_input_list("Enter damage (comma-separated for multi-hit): ", True)
+    attackHeight = input("Enter attack height (e.g., High, Mid, Low): ")
+    startupFrames_input = get_input_list("Enter startup frames (comma-separated for multi-hit): ", True)
+    activeFrames_input = get_input_list("Enter active frames (comma-separated for multi-hit): ", True)
+    recoveryFrames = get_input_list("Enter recovery frames: ")
+    invulFrames = get_input_list("Enter invul frames: ")
+    hitstun_input = get_input_list("Enter hitstun (comma-separated for multi-hit): ", True)
+    blockstun_input = get_input_list("Enter blockstun (comma-separated for multi-hit): ", True)
+    meterGain = get_input_list("Enter meter gain: ")
+    counterProperties = input("Enter counter properties (comma-separated, leave blank if none): ").split(",")
+    counterProperties = [x.strip() for x in counterProperties] if counterProperties[0] else []
+    range_input = get_input_list("Enter range: ")
+    cancelOptions = input("Enter cancel options (comma-separated, leave blank if none): ").split(",")
+    cancelOptions = [x.strip() for x in cancelOptions] if cancelOptions[0] else []
+    verticalKnockback_input = get_input_list("Enter vertical knockback (comma-separated for multi-hit): ", True)
+    horizontalKnockback_input = get_input_list("Enter horizontal knockback (comma-separated for multi-hit): ", True)
 
-# Multi-Hitting Attack
-multiHitMove = Attack(
-    "Heavy",
-    "5H",
-    [30, 40, 50],
-    "Mid",
-    [10, 20, 30],
-    [5, 5, 5],
-    18,
-    0,
-    [25, 30, 35],
-    [15, 20, 25],
-    meterGain=10,
-    range=5,
-    cancelOptions=["Special", "Super"],
-    verticalKnockback=[6, 7, 8],
-    horizontalKnockback=[9, 10, 11]
-)
+    chargeLevels = {}
+    has_charge_levels = input("Does this move have charge levels? (yes/no): ").strip().lower()
+    if has_charge_levels == "yes":
+        num_charge_levels = get_input_list("How many charge levels? ")
+        for level in range(1, num_charge_levels + 1):
+            print(f"\nDefine properties for Charge Level {level}:\n")
+            chargeTime = get_input_list("  Enter charge time (frames): ")
+            damage = get_input_list("  Enter damage (comma-separated for multi-hit): ", True)
+            startupFrames = get_input_list("  Enter startup frames (comma-separated for multi-hit): ", True)
+            activeFrames = get_input_list("  Enter active frames (comma-separated for multi-hit): ", True)
+            recoveryFrames = get_input_list("  Enter recovery frames: ")
+            hitstun = get_input_list("  Enter hitstun (comma-separated for multi-hit): ", True)
+            blockstun = get_input_list("  Enter blockstun (comma-separated for multi-hit): ", True)
+            verticalKnockback = get_input_list("  Enter vertical knockback (comma-separated for multi-hit): ", True)
+            horizontalKnockback = get_input_list("  Enter horizontal knockback (comma-separated for multi-hit): ", True)
 
-print(multiHitMove)
-multiHitMove.calculateFrameAdvantage()
-multiHitMove.calculateHitAdvantage()
+            chargeLevels[level] = {
+                "chargeTime": chargeTime,
+                "damage": damage,
+                "startupFrames": startupFrames,
+                "activeFrames": activeFrames,
+                "recoveryFrames": recoveryFrames,
+                "hitstun": hitstun,
+                "blockstun": blockstun,
+                "verticalKnockback": verticalKnockback,
+                "horizontalKnockback": horizontalKnockback
+            }
 
-# Charge Attack
-chargeAttackMove = Attack(
-    "Charge",
-    "5S (Hold)",
-    None,
-    "High",
-    None,
-    None,
-    None,
-    0,
-    None,
-    None,
-    meterGain=0,
-    range=5,
-    cancelOptions=["Super"],
-    chargeLevels={
-        "Level 1": {
-            "damage": [20],
-            "startupFrames": [15],
-            "activeFrames": [3],
-            "recoveryFrames": 12,
-            "hitstun": [18],
-            "blockstun": [10],
-            "verticalKnockback": [4],
-            "horizontalKnockback": [6]
-        },
-        "Level 2": {
-            "damage": [40],
-            "startupFrames": [25],
-            "activeFrames": [4],
-            "recoveryFrames": 15,
-            "hitstun": [22],
-            "blockstun": [12],
-            "verticalKnockback": [5],
-            "horizontalKnockback": [8]
-        },
-        "Level 3": {
-            "damage": [60],
-            "startupFrames": [35],
-            "activeFrames": [5],
-            "recoveryFrames": 18,
-            "hitstun": [26],
-            "blockstun": [14],
-            "verticalKnockback": [6],
-            "horizontalKnockback": [10]
-        }
-    }
-)
+    attack = Attack(
+        attackStrength,
+        attackInput,
+        damage_input,
+        attackHeight,
+        startupFrames_input,
+        activeFrames_input,
+        recoveryFrames,
+        invulFrames,
+        hitstun_input,
+        blockstun_input,
+        meterGain,
+        counterProperties,
+        range_input,
+        cancelOptions,
+        verticalKnockback_input,
+        horizontalKnockback_input,
+        chargeLevels
+    )
 
-print(chargeAttackMove)
-chargeAttackMove.calculateFrameAdvantage()
-chargeAttackMove.calculateHitAdvantage()
+    print(attack)
+    attack.calculateFrameAdvantage()
+    attack.calculateHitAdvantage()
+
+if __name__ == "__main__":
+    create_attack()
